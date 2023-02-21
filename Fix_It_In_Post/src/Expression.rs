@@ -1,7 +1,8 @@
 
-use std::env::args;
+use std::env;
+use std::error::Error;
 use std::fs::{File, OpenOptions};
-use std::io::{BufRead, BufReader, BufWriter, Write, Error};
+use std::io::{self , BufRead, BufReader, BufWriter, Write};
 use std::process::exit;
 
 
@@ -12,9 +13,29 @@ use std::process::exit;
  */
 
 fn main(){
-    let postfix = String::new();
+    let args: Vec<String> = env::args().collect();
+    //handles command line arguemnts commented out for testing
+   // if args.len() != 3 {
+     //   println!("Usage: cargo run --example expr [INPUTFILE] [OUTPUTFILE]");
+      //  return;  // acts as exit
+    //}
+    
+
+    
+    
+    // setting input file to the first commane line argument 
+    //commented out for testing  
+    //let input_file: &str = &args[1];
+
+    let postfix:Vec<String> =  build_expression_list("input.txt").unwrap();//if inside src directory path is input.txt
     let expr: Vec<f64> = Vec::new();
     let infix: Vec<String> = Vec::new();
+
+     
+    //printing elements from postfix for testing
+    for i in 0..postfix.len(){
+        println!("{}",postfix[i])
+    }
 }
 
 
@@ -38,8 +59,24 @@ fn solve(postfix: &String){
  * and returns a ‘Result’ with a vector of expressions from the file or an appropriate error.
  */
 
-fn build_expression_list(input_file: &str){
+fn build_expression_list(input_file: &str) -> Result<Vec<String> , io::Error>{
+    let file = File::open(input_file);
+    //checking not complete yet , works if file exists
+    let check_file = match file{
+        Ok(file) => file,
+        Err(e) => return Err(e)
+
+    };
     
+    let reader = BufReader::new(check_file);
+    let mut expressions: Vec<String> = Vec::new();// each line from the input file is a postfix expression
+
+    //initializing expressions vector
+    for lines in reader.lines(){
+        expressions.push(lines.unwrap())
+    }
+
+    return Ok((expressions));
 }
 
 /**
