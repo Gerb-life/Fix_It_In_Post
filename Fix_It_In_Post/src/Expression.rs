@@ -56,16 +56,14 @@ impl Expression {
     //commented out for testing  
     //let input_file: &str = &args[1];
 
-    let postfix:Vec<String> =  build_expression_list("input.txt").unwrap();//if inside src directory path is input.txt
-    //let expr: Vec<f64> = Vec::new();
-    //let infix: Vec<String> = Vec::new();
+    let expression_list: Vec<Expression> =  build_expression_list("input.txt").unwrap();//if inside src directory path is input.txt
+    
     
 
      
-    //printing elements from postfix for testing
-    for i in 0..postfix.len(){
-        println!("{}",postfix[i])
-    }
+    //printing elements from expressionlist for testing
+    println!("{}",expression_list[1].postfix);
+
 }
 
 /**
@@ -73,22 +71,25 @@ impl Expression {
  * and returns a ‘Result’ with a vector of expressions from the file or an appropriate error.
  */
 
-fn build_expression_list(input_file: &str) -> Result<Vec<String> , io::Error>{
+ fn build_expression_list(input_file: &str) -> Result<Vec<Expression> , io::Error>{
     let file = File::open(input_file);
     //checking not complete yet , works if file exists
     let check_file = match file{
         Ok(file) => file,
         Err(e) => return Err(e)
     };
-    
-    let reader = BufReader::new(check_file);
-    let mut expressions: Vec<String> = Vec::new();// each line from the input file is a postfix expression
-    //initializing expressions vector
-    for lines in reader.lines(){
-        expressions.push(lines.unwrap())
-    }
 
-    return Ok((expressions));
+    let mut expression_list: Vec<Expression> = Vec:: new();
+    let reader = BufReader::new(check_file);
+    //initialize expression list with postfix expressions from file
+
+    for lines in reader.lines(){
+        let expression = Expression::new(lines.unwrap());
+
+        expression_list.push(expression);
+    }
+   
+    return Ok(expression_list);
 }
 
 /**
