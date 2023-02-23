@@ -6,16 +6,19 @@ use std::io::{self , BufRead, BufReader, BufWriter, Write};
 use std::process::exit;
 
 
+///The Expression "Object"
+/// postfix: A string representing a postfix expression 
+/// expr: The expression's numerical solution
+/// infix: The infix representation of the expression
 pub struct Expression{
     postfix: String,
     expr: Vec<f64>,
     infix: Vec<String>,
 }
 
+//Implementing the "Objects" methods 
 impl Expression {
     
-
-
 //constructor
     fn new(input: String) -> Self{
         Expression { 
@@ -151,5 +154,5 @@ fn solve(postfix: &String){
  * Returns true if the argument is one of the operators we;re looking for 
  */
 fn is_operator(){
-    
+
 }
