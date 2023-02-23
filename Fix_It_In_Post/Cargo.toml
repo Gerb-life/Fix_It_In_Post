@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 
-[[example]]
+[[bin]]
 name = "expr"
 path = "src/Expression.rs"
