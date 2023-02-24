@@ -34,7 +34,7 @@ impl Expression {
  * returns - none
  */
 
-fn solve(& self){
+fn solve(&mut self){
     let mut stack = Vec::new();
     let expressions = "*+/-";
     
@@ -52,7 +52,7 @@ fn solve(& self){
                 "/" => result = val1 / val2,
                 &_ => todo!(), //For some reason< Rust is demanding we put this at the end
             }
-
+            
             stack.push(result);
 
         }else{//Else our character is a number 
@@ -62,26 +62,36 @@ fn solve(& self){
         }
 
     }
-    print!("{:?}", stack.pop().unwrap())
+    self.expr = stack;
+    //print!("{:?}", stack);
 
-    /*
 
-    let expressions = "*+/-";
-    let mut stack: Vec<i16> = Vec::new();
-
-    for character in post.chars(){//We'll be iterating over all the characters
-        println!("{}", character);
-        //If the character is an expression 
-        if expressions.contains(character){
-            
-        }
-        else{//Else the character is an integer 
-
-        }
-    }
-     */
 }
    
+
+fn postfix_to_infix(&mut self){
+    let mut stack:Vec<String> = Vec::new();
+    
+
+    for item in self.postfix.split_whitespace(){
+        //if operand push onto stack
+        if(!is_operator(item)){
+            stack.push(item.to_string());
+        }
+        //else pop 2 elements, combine and push onto stack
+        else{
+            let operand1 = stack.pop().unwrap();
+            let operand2 = stack.pop().unwrap();
+            let combine = format!("({} {} {})" ,operand2 , item , operand1 );
+            stack.push( combine ); 
+
+        }
+        
+        
+    }
+    //setting expression infix to be equal to clone of first element
+    self.infix = stack[0].clone();
+}
 
 }
 
@@ -119,10 +129,11 @@ fn solve(& self){
     }
 */
 
-    
-    let expr: Expression = expression_list.remove(3);
-    expr.solve();
-
+   for i in 0..expression_list.len(){
+    expression_list[i].solve();
+    expression_list[i].postfix_to_infix();
+    println!("{}", to_string(&expression_list[i]));
+   }
 
      
     
@@ -194,6 +205,18 @@ fn solve_list(expression_list: &mut Vec<Expression>){
 /// REMEMBER TO GET RID OF THE FUNCTION "postfix"
 /// We'll be using the one defined in Expression 
 
+
+fn to_string(expression: &Expression) -> String{
+    
+   // println!("Postfix:{} \nInfix: {} \nExpr: {:?}", expression.postfix , expression.infix, expression.expr);
+
+   let result = format!("{} = {:?}" , expression.infix , expression.expr);
+
+    
+
+
+    return result;
+}
 
 
 
