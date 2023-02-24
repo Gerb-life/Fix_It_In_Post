@@ -4,6 +4,7 @@ use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io::{self , BufRead, BufReader, BufWriter, Write};
 use std::process::exit;
+use evalexpr::*; //Ask Kreahling if we can use this?
 
 
 ///The Expression "Object"
@@ -28,6 +29,58 @@ impl Expression {
          }
     }
 
+/**
+ * Solves postfix expression and creates infix express
+ * returns - none
+ */
+
+fn solve(& self){
+    let mut stack = Vec::new();
+    let expressions = "*+/-";
+    
+    // Splitting over whitespaces gives us all the characters in our expression
+    for character in self.postfix.split_whitespace(){
+        if expressions.contains(character){
+            let val2 = stack.pop().unwrap();
+            let val1 = stack.pop().unwrap();
+            let mut result = 0.0;
+
+            match character{
+                "*" => result = val1 * val2,
+                "-" => result = val1 - val2,
+                "+" => result = val1 + val2,
+                "/" => result = val1 / val2,
+                &_ => todo!(), //For some reason< Rust is demanding we put this at the end
+            }
+
+            stack.push(result);
+
+        }else{//Else our character is a number 
+            //We convert the character to f64 and push it on the stack
+            let num = character.parse::<f64>().unwrap();
+            stack.push(num);
+        }
+
+    }
+    print!("{:?}", stack.pop().unwrap())
+
+    /*
+
+    let expressions = "*+/-";
+    let mut stack: Vec<i16> = Vec::new();
+
+    for character in post.chars(){//We'll be iterating over all the characters
+        println!("{}", character);
+        //If the character is an expression 
+        if expressions.contains(character){
+            
+        }
+        else{//Else the character is an integer 
+
+        }
+    }
+     */
+}
    
 
 }
@@ -41,14 +94,14 @@ impl Expression {
 
 
 
-    let args: Vec<String> = env::args().collect();
+    let mut args: Vec<String> = env::args().collect();
     //handles command line arguemnts commented out for testing
    // if args.len() != 3 {
      //   println!("Usage: cargo run --example expr [INPUTFILE] [OUTPUTFILE]");
       //  return;  // acts as exit
     //}
 
-    //let e = Expression::new(args);
+    //Gets the 2nd index of the argument array (which should be the file we're pulling from)
 
     
     
@@ -56,13 +109,14 @@ impl Expression {
     //commented out for testing  
     //let input_file: &str = &args[1];
 
-    let expression_list: Vec<Expression> =  build_expression_list("input.txt").unwrap();//if inside src directory path is input.txt
+    let mut expression_list: Vec<Expression> =  build_expression_list("src/input.txt").unwrap();//if inside src directory path is input.txt
     
-    
+    let expr: Expression = expression_list.remove(3);
+    expr.solve();
 
-     
+
     //printing elements from expressionlist for testing
-    println!("{}",expression_list[1].postfix);
+    //println!("{}",expression_list[1].postfix);
 
 }
 
@@ -131,24 +185,7 @@ fn solve_list(expr: Vec<f64>){
 /// REMEMBER TO GET RID OF THE FUNCTION "postfix"
 /// We'll be using the one defined in Expression 
 
- /**
- * Solves postfix expression and creates infix express
- * returns - none
- */
 
-fn solve(postfix: &String){
-    
-    postfix.trim();//Gets rid of the whitespace in our expression 
-
-    let mut stack: Vec<i16> = Vec::new();
-
-    for character in postfix.chars(){//We'll be iterating over all the characters
-        println!("{}", character);
-
-        
-
-    }
-}
 
 
 /**
