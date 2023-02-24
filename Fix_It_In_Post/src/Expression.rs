@@ -13,7 +13,7 @@ use std::process::exit;
 pub struct Expression{
     postfix: String,
     expr: Vec<f64>,
-    infix: Vec<String>,
+    infix: String,
 }
 
 //Implementing the "Objects" methods 
@@ -23,7 +23,7 @@ impl Expression {
     fn new(input: String) -> Self{
         Expression { 
             postfix : input,
-            infix: Vec::new(),
+            infix: String::new(),
             expr: Vec::new(),
          }
     }
@@ -56,13 +56,20 @@ impl Expression {
     //commented out for testing  
     //let input_file: &str = &args[1];
 
-    let expression_list: Vec<Expression> =  build_expression_list("input.txt").unwrap();//if inside src directory path is input.txt
+    let mut expression_list: Vec<Expression> =  build_expression_list("input.txt").unwrap();//if inside src directory path is input.txt
     
+    for i in 0..expression_list.len(){
+    solve(&mut expression_list[i]);
+
+    to_string(&expression_list[i]);
+    }
+    
+
     
 
      
-    //printing elements from expressionlist for testing
-    println!("{}",expression_list[1].postfix);
+    
+    
 
 }
 
@@ -95,18 +102,17 @@ impl Expression {
 /**
  * Takes a reference to a vector of Expressions and solves them. No return value.
  */
-fn solve_list(expr: Vec<f64>){
-
-    for i in 0..expr.len(){
-        println!("{}",expr[i]);
-    }
+fn solve_list(expression_list: &mut Vec<Expression>){
+    
+   
+    
 }
 
 /**
  * Takes a reference to a vector of Expressions and sorts them based on the value of the
  * expressions solution.
  */
-    fn sort_list(expr: Vec<f64>){
+    fn sort_list(expression_list: &mut Vec<Expression>){
         // We should pass the Vector to this method after we've pass it to solve_list()
 
     }
@@ -116,7 +122,7 @@ fn solve_list(expr: Vec<f64>){
     * to a vector of expressions. This function returns a ’Result’
     */
 
-    fn write_to_file(output: &str , expr: Vec<f64>){
+    fn write_to_file(output: &str , expression_list: &Vec<Expression>){
 
     }
 
@@ -136,24 +142,55 @@ fn solve_list(expr: Vec<f64>){
  * returns - none
  */
 
-fn solve(postfix: &String){
+fn solve(expression: &mut Expression){
+    let mut stack:Vec<String> = Vec::new();
     
-    postfix.trim();//Gets rid of the whitespace in our expression 
 
-    let mut stack: Vec<i16> = Vec::new();
+    for item in expression.postfix.split_whitespace(){
+        //if operand push onto stack
+        if(!is_operator(item)){
+            stack.push(item.to_string());
+        }
+        //else pop 2 elements, combine and push onto stack
+        else{
+            let operand1 = stack.pop().unwrap();
+            let operand2 = stack.pop().unwrap();
+            let combine = format!("({}{}{})" ,operand2 , item , operand1 );
+            stack.push( combine ); 
 
-    for character in postfix.chars(){//We'll be iterating over all the characters
-        println!("{}", character);
-
+        }
         
-
+        
     }
+    //setting expression infix to be equal to clone of first element
+    expression.infix = stack[0].clone();
+    
+    
+}
+
+
+
+//simple to string method for checking
+fn to_string(expression: &Expression){
+    println!("Postfix: {}\n Infix: {:?} \n Expr: {:?} \n" , expression.postfix , expression.infix, expression.expr);
 }
 
 
 /**
- * Returns true if the argument is one of the operators we;re looking for 
+ * Returns true if the argument is one of the operators we're looking for 
  */
-fn is_operator(){
+fn is_operator(character: &str) -> bool{
+    let operators = ["/" , "+" , "-" , "*"];
+    let mut result = false;
+
+    for i in 0..operators.len(){
+        if character == operators[i]{
+            result = true;
+        }
+    }
+    
+
+
+    return result;
 
 }
