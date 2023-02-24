@@ -63,6 +63,7 @@ fn solve(&mut self){
 
     }
     self.expr = stack;
+
     //print!("{:?}", stack);
 
 
@@ -120,21 +121,16 @@ fn postfix_to_infix(&mut self){
 
     let mut expression_list: Vec<Expression> =  build_expression_list("input.txt").unwrap();//if inside src directory path is input.txt
     
-    
-/* 
+    solve_list(&mut expression_list);
+    sort_list(&mut expression_list);
+
+
     for i in 0..expression_list.len(){
-    solve(&mut expression_list[i]);
-
-    to_string(&expression_list[i]);
+        println!("{}" , to_string(&expression_list[i]));
     }
-*/
 
-   for i in 0..expression_list.len(){
-    expression_list[i].solve();
-    expression_list[i].postfix_to_infix();
-    println!("{}", to_string(&expression_list[i]));
-   }
-
+    
+   
      
     
     
@@ -172,7 +168,10 @@ fn postfix_to_infix(&mut self){
  */
 fn solve_list(expression_list: &mut Vec<Expression>){
     
-   
+    for i in 0..expression_list.len(){
+        expression_list[i].solve();
+        expression_list[i].postfix_to_infix();
+       }
     
 }
 
@@ -182,7 +181,32 @@ fn solve_list(expression_list: &mut Vec<Expression>){
  */
     fn sort_list(expression_list: &mut Vec<Expression>){
         // We should pass the Vector to this method after we've pass it to solve_list()
+        let length = expression_list.len();
 
+        for i in 0..length{
+            
+            let smallest = find_smallest(expression_list, i);
+    
+            
+            expression_list.swap(smallest , i);
+        }
+
+    }
+
+    fn find_smallest(expression_list: &mut Vec<Expression>, current: usize)-> usize{
+        let length = expression_list.len();
+        
+        let mut smallest = current;
+        
+        //if vector at i is less than smallest then change smallest
+        for i in (current +1)..length{
+            if expression_list[i].expr[0] < expression_list[smallest].expr[0]{
+                smallest = i;
+            }
+        }
+        
+        smallest
+    
     }
 
     /**
@@ -199,11 +223,6 @@ fn solve_list(expression_list: &mut Vec<Expression>){
 
 
 
-
-////ONCE THIS METHOD IS FINISHED, PUT IT BACK IN THE EXPRESSION CLASS IMPLEMENTATION
-/// Were are putting it outside so we can test it with main
-/// REMEMBER TO GET RID OF THE FUNCTION "postfix"
-/// We'll be using the one defined in Expression 
 
 
 fn to_string(expression: &Expression) -> String{
