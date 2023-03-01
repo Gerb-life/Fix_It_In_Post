@@ -61,7 +61,8 @@ impl Expression {
             }
 
         }
-        self.expr = stack; 
+        self.expr = stack;
+        
     }
    
     ///
@@ -69,12 +70,13 @@ impl Expression {
     /// 
     fn postfix_to_infix(&mut self){
         let mut stack:Vec<String> = Vec::new();
-    
+        
         // Gets all of the characters in a expression. 
         for character in self.postfix.split_whitespace(){
          //if operand push onto stack
             if !is_operator(character){
                 stack.push(character.to_string());
+                //println!("{:?}", stack);
             }
             //else pop 2 elements, combine and push onto stack
             else{
@@ -82,10 +84,18 @@ impl Expression {
                 let operand2 = stack.pop().unwrap();
                 let combine = format!("({} {} {})" ,operand2 , character , operand1 );
                 stack.push( combine ); 
+                
             } 
         }
+        
         //setting expression infix to be equal to clone of first element
-        self.infix = stack[0].clone();
+        if(stack.len() == 1){
+            self.infix = stack[0].clone();
+        }
+        else{
+            self.infix = String::from("Invalid Input");
+            
+        }
     }
     
     
@@ -121,11 +131,11 @@ impl Expression {
     solve_list(&mut expression_list);
     sort_list(&mut expression_list);
     write_to_file("testOutput.txt", &mut expression_list).expect("Failed to create and write");
-
-
+    
     for i in 0..expression_list.len(){
-        print!("{}" , expression_list[i].to_string());
+        println!("{}" , expression_list[i].to_string());
     }
+    
 
 }
 
@@ -147,9 +157,12 @@ fn build_expression_list(file_name: &str) -> Result<Vec<Expression> , Error>{
 
     //Gets all lines from file
     for lines in reader.lines(){
-        let expression = Expression::new(lines.unwrap());
+        let clone = lines.unwrap().clone();
+        if clone.len() > 0 {
+        let expression = Expression::new(clone);
 
         expression_list.push(expression);//Pushing a line from the file into expression list 
+        }
     }
    
     return Ok(expression_list);
