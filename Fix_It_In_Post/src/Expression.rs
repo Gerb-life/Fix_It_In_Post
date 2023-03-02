@@ -88,7 +88,7 @@ impl Expression {
         self.infix = stack[0].clone();
     }
     
-    
+
     fn to_string(& self) -> String{
         let result = format!("{} = {:?}\n" , self.infix , self.expr);
         return result;
@@ -103,6 +103,7 @@ impl Expression {
  fn main(){
 
     let mut _args: Vec<String> = env::args().collect();
+    
     //handles command line arguemnts commented out for testing
     // if args.len() != 3 {
     // println!("Usage: cargo run --example expr [INPUTFILE] [OUTPUTFILE]");
@@ -115,12 +116,13 @@ impl Expression {
     // setting input file to the first commane line argument 
     //commented out for testing  
     //let input_file: &str = &args[1];
-
-    let mut expression_list: Vec<Expression> =  build_expression_list("input.txt").unwrap();//if inside src directory path is input.txt
+    let input_file = &_args[1];
+    let output_file = &_args[2];
+    let mut expression_list: Vec<Expression> =  build_expression_list(input_file).unwrap();//if inside src directory path is input.txt
     
     solve_list(&mut expression_list);
     sort_list(&mut expression_list);
-    write_to_file("testOutput.txt", &mut expression_list).expect("Failed to create and write");
+    write_to_file(output_file, &mut expression_list).expect("Failed to create and write");
 
 
     for i in 0..expression_list.len(){
@@ -134,7 +136,7 @@ impl Expression {
 /// and returns a ‘Result’ with a vector of expressions from the file or an appropriate error.
 /// 
 /// * - 'file_name' The name of the file we're pulling expressions from. 
-fn build_expression_list(file_name: &str) -> Result<Vec<Expression> , Error>{
+fn build_expression_list(file_name: &String) -> Result<Vec<Expression> , Error>{
     let file = File::open(file_name);
     //checking not complete yet , works if file exists
     let check_file = match file{
