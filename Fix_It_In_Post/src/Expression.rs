@@ -40,29 +40,27 @@ impl Expression {
         // Splitting over whitespaces gives us all the characters in our expression
         for character in self.postfix.split_whitespace(){
             if is_operator(character){ // If our character is a expression
-                let val2 = stack.pop().unwrap();
-                let val1 = stack.pop().unwrap();
-                let result;
+                    let val2 = stack.pop().unwrap();
+                    let val1 = stack.pop().unwrap();
+                    let result;
 
-                match character{
-                    "*" => result = val1 * val2,
-                    "-" => result = val1 - val2,
-                    "+" => result = val1 + val2,
-                    "/" => result = val1 / val2,
-                    &_ => todo!(), // For some reason, Rust is demanding we put this at the end
-                }
+                    match character{
+                        "*" => result = val1 * val2,
+                        "-" => result = val1 - val2,
+                        "+" => result = val1 + val2,
+                        "/" => result = val1 / val2,
+                        &_ => todo!(), // For some reason, Rust is demanding we put this at the end
+                    }
             
-                stack.push(result);
+                    stack.push(result);
 
-            }else{// Else our character is a number 
+            }else if is_digit(character){// Else our character is a number 
                 // We convert the character to f64 and push it on the stack
                 let num = character.parse::<f64>().unwrap();
                 stack.push(num);
             }
-
         }
         self.expr = stack;
-        
     }
    
     ///
@@ -74,35 +72,52 @@ impl Expression {
         // Gets all of the characters in a expression. 
         for character in self.postfix.split_whitespace(){
          //if operand push onto stack
-            if !is_operator(character){
+            if is_digit(character){
                 stack.push(character.to_string());
                 //println!("{:?}", stack);
             }
             //else pop 2 elements, combine and push onto stack
-            else{
+            else if is_operator(character){
                 let operand1 = stack.pop().unwrap();
                 let operand2 = stack.pop().unwrap();
                 let combine = format!("({} {} {})" ,operand2 , character , operand1 );
                 stack.push( combine ); 
-                
             } 
         }
-        
-        //setting expression infix to be equal to clone of first element
-        if(stack.len() == 1){
+        if stack.len() == 1 {
             self.infix = stack[0].clone();
-        }
-        else{
-            self.infix = String::from("Invalid Input");
-            
         }
     }
     
-
     fn to_string(& self) -> String{
-        let result = format!("{} = {:?}\n" , self.infix , self.expr);
+        let result = format!("{} = {:?}\n" , self.infix , self.expr[0]);
         return result;
     }
+
+    fn is_valid(&self) -> bool{
+        let mut valid = true;
+        let mut stack:Vec<&str> = Vec::new();
+        for character in self.postfix.split_whitespace(){
+            if is_operator(character){
+                // If we encournter an operator, we should have at least 2 values in out stack
+                if stack.len() >= 2 { 
+                    stack.pop();
+                    stack.pop();
+                    stack.push("0");//We can just push some random value
+                }
+                else { // Else this is an invalid expression
+                    valid = false;
+                }
+            }else if is_digit(character){
+                stack.push(character)
+            }
+            else{
+                valid = false;
+            }
+        }
+        // The stack length should be 1, or this isn't a valid expression
+        return valid && stack.len() == 1
+    }   
     
 }
 
@@ -127,7 +142,7 @@ impl Expression {
     //commented out for testing  
     //let input_file: &str = &args[1];
     let input_file = &_args[1];
-    let output_file = &_args[2];
+    //let output_file = &_args[2];
     let mut expression_list: Vec<Expression> =  build_expression_list(input_file).unwrap();//if inside src directory path is input.txt
     
     solve_list(&mut expression_list);
@@ -161,9 +176,10 @@ fn build_expression_list(file_name: &String) -> Result<Vec<Expression> , Error>{
     for lines in reader.lines(){
         let clone = lines.unwrap().clone();
         if clone.len() > 0 {
-        let expression = Expression::new(clone);
-
-        expression_list.push(expression);//Pushing a line from the file into expression list 
+            let expression = Expression::new(clone);
+            if expression.is_valid() == true{
+                expression_list.push(expression);//Pushing a line from the file into expression list 
+            }
         }
     }
    
@@ -175,9 +191,9 @@ fn build_expression_list(file_name: &String) -> Result<Vec<Expression> , Error>{
 /// * 'expression_list' - A list of Expression objects
 fn solve_list(expression_list: &mut Vec<Expression>){
     for i in 0..expression_list.len(){
-        expression_list[i].solve();
         expression_list[i].postfix_to_infix();
-       } 
+        expression_list[i].solve();
+    } 
 }
 
 /// Takes a reference to a vector of Expressions and sorts them based on the value of the
@@ -240,6 +256,21 @@ fn is_operator(character: &str) -> bool{
     for i in 0..operators.len(){
         if character == operators[i]{
             result = true;
+        }
+    }
+    return result;
+}
+
+/// Returns true if the argument is one of the characters we're looking for.
+/// 
+/// * 'character' - The character we're checking. 
+fn is_digit (character: &str) -> bool{
+    let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    let mut result = true;
+
+    for element in character.chars(){
+        if !digits.contains(&element){
+            result = false;
         }
     }
     return result;
