@@ -71,12 +71,11 @@ impl Expression {
         
         // Gets all of the characters in a expression. 
         for character in self.postfix.split_whitespace(){
-         //if operand push onto stack
-            if is_digit(character){
+            if is_digit(character){ // If operand push onto stack
                 stack.push(character.to_string());
                 //println!("{:?}", stack);
             }
-            //else pop 2 elements, combine and push onto stack
+            // Else pop 2 elements, combine and push onto stack
             else if is_operator(character){
                 let operand1 = stack.pop().unwrap();
                 let operand2 = stack.pop().unwrap();
@@ -84,16 +83,22 @@ impl Expression {
                 stack.push( combine ); 
             } 
         }
-        if stack.len() == 1 {
+        if stack.len() == 1 { // If we end our loop with 1 value in the stack 
+            // Make our expression's 'infix' field our infix expression 
             self.infix = stack[0].clone();
         }
     }
     
+    ///
+    /// Formats our Epxression, shoing it in infix notation and its value.
+    /// 
     fn to_string(& self) -> String{
         let result = format!("{} = {:?}\n" , self.infix , self.expr[0]);
         return result;
     }
 
+
+    /// We need to RETURN AN ERROR MESSAGE if our expression is invalid 
     fn is_valid(&self) -> bool{
         let mut valid = true;
         let mut stack:Vec<&str> = Vec::new();
