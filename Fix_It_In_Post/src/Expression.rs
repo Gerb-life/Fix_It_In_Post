@@ -1,3 +1,9 @@
+/// Gabriel Rodriguez and Josiah Cherbony 
+/// Version: Spring 2023
+/// 
+/// Description: A program that takes a file of postfix expressions as input
+/// and returns a sorted list of infix expressions in a seperate file. 
+
 use std::env;
 use std::fs::{File};
 use std::io::{BufRead, BufReader, Write, Error as Err};
@@ -53,8 +59,8 @@ impl Expression {
                     &_ => todo!(), 
                 }
 
-                let combine = format!("({} {} {})" , operand1, character , operand2 );
-                stack.push( combine ); 
+                let combine = format!("({} {} {})" , operand1, character, operand2);
+                stack.push(combine); 
                 self.expr.push(result);
 
             }else if is_num(character){// Else our character is a number 
