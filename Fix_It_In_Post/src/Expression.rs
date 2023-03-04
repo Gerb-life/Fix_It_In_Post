@@ -25,6 +25,10 @@ impl Expression {
     /// Constructs a new 'Expression' object 
     /// 
     /// * 'input' - The postfix expression 
+    /// 
+    /// Return:
+    /// 
+    /// A new Expression object.
     fn new(input: String) -> Self{
         Expression { 
             postfix : input,
@@ -38,6 +42,8 @@ impl Expression {
     /// Both are asssigned to our objects' fields.
     /// 
     fn solve(&mut self){
+        // We have 2 stacks, the 'expr' wich will hold our expression's value
+        // and 'stack' which will the infix notation. 
         let mut stack:Vec<String> = Vec::new();
 
         // Splitting over whitespaces gives us all the characters in our expression
@@ -76,12 +82,15 @@ impl Expression {
         }
     }
    
-    /// 
     /// A method that returns true if a postfix expression is valid, and false if it's  not. 
     /// 
+    /// Return:
+    /// 
+    /// True if the expression is a valid postfix expression. Otherwise, false. 
     fn is_valid(&self) -> bool{
         let mut valid = true;
         let mut stack:Vec<&str> = Vec::new();
+        
         for character in self.postfix.split_whitespace(){
             if is_operator(character){
                 // If we encournter an operator, we should have at least 2 values in out stack
@@ -104,9 +113,11 @@ impl Expression {
         return valid && stack.len() == 1
     }   
 
-    ///
-    /// Formats our Epxression, shoing it in infix notation and its value.
+    /// Formats our Epxression, showing it in infix notation and its value.
     /// 
+    /// Return:
+    /// 
+    /// A string of the expression in infix notation and its value. 
     fn to_string(& self) -> String{
         let mssg;
 
@@ -122,7 +133,7 @@ impl Expression {
     
 }
 
-
+///
 /// Parses and handles command line argument, and contains the logic and code to run the program.
 /// If there is an error writing to the output file, main should print an appropriate error message.
 /// 
@@ -153,9 +164,13 @@ impl Expression {
 /// and returns a ‘Result’ with a vector of expressions from the file or an appropriate error.
 /// 
 /// * - 'file_name' The name of the file we're pulling expressions from. 
+/// 
+/// Return:
+/// 
+/// A list of valid postfix expression, or error wrapped in a Result.
 fn build_expression_list(file_name: &String) -> Result<Vec<Expression> , Err>{
     let file = File::open(file_name);
-    // Checking not complete yet , works if file exists
+    // Checking not complete yet, works if file exists
     let check_file = match file{
         Ok(file) => file,
         Err(e) => return Err(e)
@@ -164,7 +179,7 @@ fn build_expression_list(file_name: &String) -> Result<Vec<Expression> , Err>{
     let mut expression_list: Vec<Expression> = Vec:: new();
     let reader = BufReader::new(check_file);
 
-    //Gets all lines from file
+    // Gets all lines from file
     for lines in reader.lines(){
         let clone = lines.unwrap().clone();
         if clone.len() > 0 { // The string must have more than 0 characters 
@@ -173,13 +188,11 @@ fn build_expression_list(file_name: &String) -> Result<Vec<Expression> , Err>{
             if expression.is_valid(){ // If the expression is valid 
                 expression_list.push(expression);//Pushing a line from the file into expression list 
             }
-            else{ // Else the expression is invalid
+            else{// Else the expression is invalid
                 println!("Error! '{:}' is not a valid expression!", expression.postfix);
             }
-        
         }
     }
-   
     return Ok(expression_list);
 }
 
@@ -208,10 +221,14 @@ fn sort_list(expression_list: &mut Vec<Expression>){
 }
 
 /// A helper method for finding the smallest return value in a expression list
-/// within a specified index.
+/// within a specified index. 
 /// 
 /// * 'expression_list' - A list of Expression objects.
 /// * 'current' - A number representing the [0..i] list we can traverse.
+/// 
+/// Return:
+/// 
+/// The index of the expression with the smallest value.
 fn find_smallest(expression_list: &mut Vec<Expression>, current: usize)-> usize{
     let length = expression_list.len(); 
     let mut smallest = current;
@@ -227,10 +244,14 @@ fn find_smallest(expression_list: &mut Vec<Expression>, current: usize)-> usize{
 
 
 /// This takes a reference to a string slice, representing the output file name and a reference
-/// to a vector of expressions. This function returns a ’Result’.
+/// to a vector of expressions. 
 /// 
-/// * - 'file_name' The name of the file we're pulling expressions from. 
+/// * 'file_name' - The name of the file we're pulling expressions from. 
 /// * 'expression_list' - A list of Expression objects.
+/// 
+/// Return:
+/// 
+/// A result that represents a ok or failure.
 fn write_to_file(file_name: &str , expression_list: &Vec<Expression>) -> Result<(), Err> {
     let mut file = File::create(file_name)?;
 
@@ -244,6 +265,10 @@ fn write_to_file(file_name: &str , expression_list: &Vec<Expression>) -> Result<
 /// Returns true if the argument is one of the operators we're looking for.
 /// 
 /// * 'character' - The character we're checking. 
+/// 
+/// Return:
+/// 
+/// True if the string slice is a defined operator. Otherwise, false.
 fn is_operator(character: &str) -> bool{
     let operators = ["/" , "+" , "-" , "*"];
     let mut result = false;
@@ -259,6 +284,10 @@ fn is_operator(character: &str) -> bool{
 /// Returns true if the argument is a number
 /// 
 /// * 'character' - The character we're checking. 
+/// 
+/// Return:
+/// 
+/// True if the string slice is a defined number. Otherwise, false.
 fn is_num (character: &str) -> bool{
     let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
     let mut result = true;
