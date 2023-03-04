@@ -45,6 +45,7 @@ impl Expression {
         // We have 2 stacks, the 'expr' wich will hold our expression's value
         // and 'stack' which will the infix notation. 
         let mut stack:Vec<String> = Vec::new();
+        
 
         // Splitting over whitespaces gives us all the characters in our expression
         for character in self.postfix.split_whitespace(){
@@ -64,8 +65,9 @@ impl Expression {
                     "/" => result = val1 / val2,
                     &_ => todo!(), 
                 }
-
-                let combine = format!("({} {} {})" , operand1, character, operand2);
+              
+                let combine = format!("({} {} {})" , operand1, character, operand2); 
+                
                 stack.push(combine); 
                 self.expr.push(result);
 
@@ -77,8 +79,13 @@ impl Expression {
             }
         }
         if stack.len() == 1 { // If we end our loop with 1 value in the stack 
+            let mut string1 = stack[0].to_string();
+            // This removes the outter paranthesis from our expression
+            if string1.contains("("){
+                string1 = string1[1..string1.len() - 1].to_string();
+            }
+            self.infix = string1
             // Make our expression's 'infix' field our infix expression 
-            self.infix = stack[0].clone();
         }
     }
    
@@ -90,7 +97,7 @@ impl Expression {
     fn is_valid(&self) -> bool{
         let mut valid = true;
         let mut stack:Vec<&str> = Vec::new();
-        
+
         for character in self.postfix.split_whitespace(){
             if is_operator(character){
                 // If we encournter an operator, we should have at least 2 values in out stack
